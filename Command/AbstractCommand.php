@@ -1,16 +1,6 @@
 <?php
 
-/*
- * This file is part of the data-transfer-bundle
- *
- * (c) Kuborgh GmbH
- *
- * For the full copyright and license information, please view the LICENSE.txt
- * file that was distributed with this source code.
- */
-
-
-namespace Kuborgh\DataTransferBundle\Command;
+namespace Acrnogor\DataTransferBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;

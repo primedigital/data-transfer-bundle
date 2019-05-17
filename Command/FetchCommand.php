@@ -1,24 +1,12 @@
 <?php
-/**
- * This file is part of the data-transfer-bundle
- *
- * (c) Kuborgh GmbH
- *
- * For the full copyright and license information, please view the LICENSE.txt
- * file that was distributed with this source code.
- */
+namespace Acrnogor\DataTransferBundle\Command;
 
-namespace Kuborgh\DataTransferBundle\Command;
-
-use Kuborgh\DataTransferBundle\Traits\DatabaseConnectionTrait;
+use Acrnogor\DataTransferBundle\Traits\DatabaseConnectionTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-/**
- * Command to fetch live data according to the configured parameters
- */
 class FetchCommand extends AbstractCommand
 {
     /**
@@ -33,9 +21,9 @@ class FetchCommand extends AbstractCommand
      */
     const VALID_DUMP_REGEX_2 = '/\-\- Dump completed on\s+\d*\-\d*\-\d*\s+\d+\:\d+\:\d+[\r\n\s\t]*$/';
 
-    /**
-     * Trait for determine the local database connection based on a given siteaccess
-     */
+    const MYSQL_CLI_WARNING_MESSAGE = 'mysqldump: [Warning] Using a password on the command line interface can be insecure.';
+
+    /** Trait for determine the local database connection based on a given siteaccess */
     use DatabaseConnectionTrait;
 
     /**
@@ -52,7 +40,7 @@ class FetchCommand extends AbstractCommand
     /**
      * Execute the command
      *
-     * @param \Symfony\Component\Console\Input\InputInterface   $input  Input
+     * @param \Symfony\Component\Console\Input\InputInterface $input Input
      * @param \Symfony\Component\Console\Output\OutputInterface $output Output
      *
      * @return void
@@ -102,7 +90,6 @@ class FetchCommand extends AbstractCommand
         $remoteEnv = $this->getParam('remote.env');
         $consoleCmd = $this->getParam('console_script');
         $options = $this->getParam('ssh.options');
-        $useFile = $this->getParam('db_via_file');
 
         // Check for ssh proxy
         $sshProxyString = $this->getSshProxyOption();
@@ -110,88 +97,38 @@ class FetchCommand extends AbstractCommand
             $options[] = $sshProxyString;
         }
 
-        $exportCmd = sprintf('ssh %s %s@%s "cd %s ; %s %s data-transfer:export %s 2>&1"', implode(' ', $options), $remoteUser, $remoteHost, $remoteDir, $consoleCmd, $remoteEnv ? '--env='.$remoteEnv : '', $useFile ? '--file' : '');
+        $exportCmd = sprintf(
+            'ssh %s %s@%s "cd %s ; %s %s data-transfer:export %s"',
+            implode(' ', $options),
+            $remoteUser,
+            $remoteHost,
+            $remoteDir,
+            $consoleCmd,
+            $remoteEnv ? '--env=' . $remoteEnv : ''
+        );
+
+        $process = new Process($exportCmd);
+        $process->setTimeout(null);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Export on remote didn\'t go so well...');
+        }
+
         $this->progress();
 
-        $cacheFolder = $this->getContainer()->getParameter('kernel.cache_dir');
+        $remoteFile = sprintf('%s/var/cache/%s/db-dump.sql', $remoteDir, $remoteEnv);
+        $localFile = sprintf('%s/db-dump.sql', $this->getContainer()->getParameter('kernel.cache_dir'));
 
-        // Create file handle to save the stream to
-        if (!$useFile) {
-            $tmpFile = $cacheFolder.'/data-transfer.sql';
-            $tmpFileHandle = fopen($tmpFile, 'w+');
+        $downloadCmd = sprintf('scp %s@%s:%s %s', $remoteUser, $remoteHost, $remoteFile, $localFile);
+        $process = new Prodcess($downloadCmd);
+        $process->setTimeout(null);
+        $process->run();
 
-            // Execute command
-            $process = new Process($exportCmd);
-            $process->setTimeout(null);
-            $bytes = 0;
-            // Update status for each megabyte
-                        $process->run(function ($type, $buffer) use (&$bytes, $tmpFileHandle, $process) {
-                            if ($type == Process::OUT) {
-                                // Update progress
-                                $bytes += strlen($buffer);
-                                if ($bytes / 1024 / 1024 >= 1) {
-                                    $this->progress();
-                                    $bytes = 0;
-                                }
-                                $process->getOutput();
-
-                                // write to file
-                                fwrite($tmpFileHandle, $buffer);
-                            }
-                        });
-
-            // Check for error
-            if (!$process->isSuccessful()) {
-                throw new \Exception(sprintf('Cannot connect to remote host: %s %s', $process->getOutput(), $process->getErrorOutput()));
-            }
-            $this->progressOk();
-
-            // Check if we have a valid dump in our output
-            // first line must start with '-- MySQL dump' and end with '-- Dump completed'
-            rewind($tmpFileHandle);
-            $start = fread($tmpFileHandle, 1024);
-            if (!preg_match(self::VALID_DUMP_REGEX_1, $start)) {
-                $excMsg = sprintf('Error on remote host. Start regex not found: "%s"', $start);
-                throw new \Exception($excMsg);
-            }
-            fseek($tmpFileHandle, -1024, SEEK_END);
-            $end = fread($tmpFileHandle, 1024);
-            if (!preg_match(self::VALID_DUMP_REGEX_2, $end)) {
-                $excMsg = sprintf('Error on remote host. End regex not found: "%s"', $end);
-                throw new \Exception($excMsg);
-            }
-            $this->progressOk();
-
-            // Close file handle
-            fclose($tmpFileHandle);
-            $this->progressDone();
-        } else {
-            // Execute command
-            $process = new Process($exportCmd);
-            $process->setTimeout(null);
-            $process->run();
-
-            // Check for error
-            if (!$process->isSuccessful()) {
-                throw new \Exception(sprintf('Cannot connect to remote host: %s %s', $process->getOutput(), $process->getErrorOutput()));
-            }
-            $this->progressOk();
-
-            // Extract information
-            $json = $process->getOutput();
-            $data = json_decode($json, true);
-
-            // Fetch file via rsync
-            $tmpFile = $cacheFolder.'/'.$data['basename'];
-            $this->rSync($data['filename'], $tmpFile);
-            $this->progressOk();
-
-            // Remove remote dump
-            $this->execRemoteCommand(sprintf('rm %s', $data['filename']));
-            $this->progressOk();
-
-            $this->progressDone();
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to transfer dump from remote server to localhost');
         }
+        $this->progressOk();
 
         // Import database
         $this->output->writeln('Importing database');
@@ -214,7 +151,7 @@ class FetchCommand extends AbstractCommand
         }
 
         // Import Dump
-        $importCmd = sprintf('mysql %s < %s 2>&1', implode(' ', $parameters), escapeshellarg($tmpFile));
+        $importCmd = sprintf('mysql %s < %s 2>&1', implode(' ', $parameters), escapeshellarg($localFile));
         $this->progress();
 
         $process = new Process($importCmd);
@@ -227,12 +164,6 @@ class FetchCommand extends AbstractCommand
             throw new \Exception(sprintf('Error importing database: %s %s', $process->getOutput(), $process->getErrorOutput()));
         }
         $this->progressOk();
-
-        // Remove temp dump file
-        if (file_exists($tmpFile)) {
-            unlink($tmpFile);
-        }
-
         $this->progress();
     }
 
@@ -326,7 +257,7 @@ class FetchCommand extends AbstractCommand
      */
     protected function getParam($param)
     {
-        return $this->getContainer()->getParameter('data_transfer_bundle.'.$param);
+        return $this->getContainer()->getParameter('data_transfer_bundle.' . $param);
     }
 
     /**
@@ -355,8 +286,8 @@ class FetchCommand extends AbstractCommand
     /**
      * Call rsync with all needed params
      *
-     * @param String   $src      Source
-     * @param String   $dst      Destination
+     * @param String $src Source
+     * @param String $dst Destination
      * @param callable $callback Optional callback
      */
     protected function rSync($src, $dst, $callback = null)

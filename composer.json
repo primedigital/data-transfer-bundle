@@ -1,14 +1,18 @@
 {
-    "name": "kuborgh/data-transfer-bundle",
+    "name": "acrnogor/data-transfer-bundle",
     "type": "library",
     "description": "Console Commands to easily transfer live data (database + files) to another environment",
     "keywords": ["library","command","database","transfer","files"],
-    "homepage": "https://github.com/kuborgh/data-transfer-bundle",
+    "homepage": "https://github.com/acrnogor/data-transfer-bundle",
     "license": "MIT",
     "authors": [
         {
             "name": "Hannes Giesenow",
             "email": "hgiesenow@kuborgh.de"
+        },
+        {
+            "name": "Ante Crnogorac",
+            "email": "zwer82@gmail.com"
         }
     ],
     "require": {
@@ -20,8 +24,8 @@
         "symfony/console": "*"
     },
     "autoload": {
-        "psr-0": { "Kuborgh\\DataTransferBundle": "" }
+        "psr-0": { "Acrnogor\\DataTransferBundle": "" }
     },
     "minimum-stability": "dev",
-    "target-dir": "Kuborgh/DataTransferBundle"
+    "target-dir": "Acrnogor/DataTransferBundle"
 }

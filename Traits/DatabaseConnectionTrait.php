@@ -1,22 +1,10 @@
 <?php
-/**
- * This file is part of the data-transfer-bundle
- *
- * (c) Kuborgh GmbH
- *
- * For the full copyright and license information, please view the LICENSE.txt
- * file that was distributed with this source code.
- */
 
-namespace Kuborgh\DataTransferBundle\Traits;
+namespace Acrnogor\DataTransferBundle\Traits;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * Database connection trait.
- * Provides helper functions to get the database connection on the current system.
- */
 trait DatabaseConnectionTrait
 {
     /**
