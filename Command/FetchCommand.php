@@ -86,10 +86,11 @@ class FetchCommand extends AbstractCommand
         // Prepare remote command
         $remoteHost = $this->getParam('remote.host');
         $remoteUser = $this->getParam('remote.user');
-        $remoteDir = $this->getParam('remote.dir');
-        $remoteEnv = $this->getParam('remote.env');
+        $remoteDir  = $this->getParam('remote.dir');
+        $remoteEnv  = $this->getParam('remote.env');
+        $remotePort = $this->getParam('remote.port');
         $consoleCmd = $this->getParam('console_script');
-        $options = $this->getParam('ssh.options');
+        $options    = $this->getParam('ssh.options');
 
         // Check for ssh proxy
         $sshProxyString = $this->getSshProxyOption();
@@ -98,7 +99,7 @@ class FetchCommand extends AbstractCommand
         }
 
         $exportCmd = sprintf(
-            'ssh %s %s@%s "cd %s ; %s %s data-transfer:export %s"',
+            'ssh %s %s@%s "cd %s ; %s data-transfer:export %s"',
             implode(' ', $options),
             $remoteUser,
             $remoteHost,
@@ -120,7 +121,14 @@ class FetchCommand extends AbstractCommand
         $remoteFile = sprintf('%s/var/cache/%s/db-dump.sql', $remoteDir, $remoteEnv);
         $localFile = sprintf('%s/db-dump.sql', $this->getContainer()->getParameter('kernel.cache_dir'));
 
-        $downloadCmd = sprintf('scp %s@%s:%s %s', $remoteUser, $remoteHost, $remoteFile, $localFile);
+        $downloadCmd = sprintf(
+            'scp -P %s %s@%s:%s %s',
+            $remotePort,
+            $remoteUser,
+            $remoteHost,
+            $remoteFile,
+            $localFile
+        );
         $process = new Process($downloadCmd);
         $process->setTimeout(null);
         $process->run();
