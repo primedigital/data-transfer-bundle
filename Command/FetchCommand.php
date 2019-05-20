@@ -121,7 +121,7 @@ class FetchCommand extends AbstractCommand
         $localFile = sprintf('%s/db-dump.sql', $this->getContainer()->getParameter('kernel.cache_dir'));
 
         $downloadCmd = sprintf('scp %s@%s:%s %s', $remoteUser, $remoteHost, $remoteFile, $localFile);
-        $process = new Prodcess($downloadCmd);
+        $process = new Process($downloadCmd);
         $process->setTimeout(null);
         $process->run();
 
