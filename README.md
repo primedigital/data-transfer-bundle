@@ -27,6 +27,7 @@ $bundles[] = new Acrnogor\DataTransferBundle\DataTransferBundle();
 
 ### 4. Configuration
 * Adapt configuration (parameters.yml + parameters.yml.dist) to your project's needs (Server, Path, siteaccess, ...)
+* make sure you or your docker-container have properly setup ssh key and that is on 'authorized_keys' on the server
 
 ## Configuration ##
 
