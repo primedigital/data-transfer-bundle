@@ -204,8 +204,9 @@ class FetchCommand extends AbstractCommand
                 $dst = dirname($src);
             }
 
-            // Prepare command
-            $cmd = sprintf('rsync -P %s -e \'ssh %s\' %s@%s:%s/%s %s/ 2>&1', implode(' ', $rsyncOptions), implode(' ', $sshOptions), $remoteUser, $remoteHost, $remoteDir, $src, $dst);
+            // Prepare command - added LK switch to not include symlinks, chances are they are not the same on remote
+            // and local server - so they will not work properly -- instead follow symlink and create hard copies
+            $cmd = sprintf('rsync -LK -P %s -e \'ssh %s\' %s@%s:%s/%s %s/ 2>&1', implode(' ', $rsyncOptions), implode(' ', $sshOptions), $remoteUser, $remoteHost, $remoteDir, $src, $dst);
 
             // Run (with callback to update those fancy dots
             $process = new Process($cmd);
@@ -289,56 +290,5 @@ class FetchCommand extends AbstractCommand
         $opt = sprintf('-o ProxyCommand="ssh -W %%h:%%p %s %s@%s"', implode(' ', $sshProxyOptions), $sshProxyUser, $sshProxyHost);
 
         return $opt;
-    }
-
-    /**
-     * Call rsync with all needed params
-     *
-     * @param String $src Source
-     * @param String $dst Destination
-     * @param callable $callback Optional callback
-     */
-    protected function rSync($src, $dst, $callback = null)
-    {
-        $rsyncOptions = $this->getParam('rsync.options');
-        $sshOptions = $this->getParam('ssh.options');
-        $remoteHost = $this->getParam('remote.host');
-        $remoteUser = $this->getParam('remote.user');
-
-        // Check for ssh proxy
-        $sshProxyString = $this->getSshProxyOption();
-        if ($sshProxyString) {
-            $sshOptions[] = $sshProxyString;
-        }
-
-        $cmd = sprintf('rsync -P %s -e \'ssh %s\' %s@%s:%s %s 2>&1', implode(' ', $rsyncOptions), implode(' ', $sshOptions), $remoteUser, $remoteHost, $src, $dst);
-        $process = new Process($cmd);
-        $process->setTimeout(null);
-        $process->run($callback);
-    }
-
-    /**
-     * Exec command on remote side via ssh
-     *
-     * @param String $cmd Command
-     */
-    protected function execRemoteCommand($cmd)
-    {
-        // Prepare remote command
-        $remoteHost = $this->getParam('remote.host');
-        $remoteUser = $this->getParam('remote.user');
-        $remoteDir = $this->getParam('remote.dir');
-        $options = $this->getParam('ssh.options');
-
-        // Check for ssh proxy
-        $sshProxyString = $this->getSshProxyOption();
-        if ($sshProxyString) {
-            $options[] = $sshProxyString;
-        }
-
-        $remoteCmd = sprintf('ssh %s %s@%s "cd %s ; %s 2>&1"', implode(' ', $options), $remoteUser, $remoteHost, $remoteDir, $cmd);
-        $process = new Process($remoteCmd);
-        $process->setTimeout(null);
-        $process->run();
     }
 }
