@@ -1,6 +1,6 @@
 <?php
 
-namespace Acrnogor\DataTransferBundle\Traits;
+namespace Prime\DataTransferBundle\Traits;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;

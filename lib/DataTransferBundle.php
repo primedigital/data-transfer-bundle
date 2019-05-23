@@ -1,6 +1,6 @@
 <?php
 
-namespace Acrnogor\DataTransferBundle;
+namespace Prime\DataTransferBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -1,10 +1,18 @@
 {
-    "name": "acrnogor/data-transfer-bundle",
-    "type": "library",
+    "name": "primedigital/data-transfer-bundle",
     "description": "Console Commands to easily transfer live data (database + files) to another environment",
-    "keywords": ["library","command","database","transfer","files"],
-    "homepage": "https://github.com/acrnogor/data-transfer-bundle",
-    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "library",
+        "command",
+        "database",
+        "transfer",
+        "files",
+        "ezpublish",
+        "ezplatform"
+    ],
+    "homepage": "https://github.com/primedigital/data-transfer-bundle",
+    "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "Hannes Giesenow",
@@ -24,8 +32,8 @@
         "symfony/console": "*"
     },
     "autoload": {
-        "psr-0": { "Acrnogor\\DataTransferBundle": "" }
-    },
-    "minimum-stability": "dev",
-    "target-dir": "Acrnogor/DataTransferBundle"
+        "psr-4": {
+            "Prime\\DataTransferBundle": "lib",
+        }
+    }
 }

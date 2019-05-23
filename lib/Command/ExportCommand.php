@@ -1,6 +1,6 @@
 <?php
 
-namespace Acrnogor\DataTransferBundle\Command;
+namespace Prime\DataTransferBundle\Command;
 
 use Acrnogor\DataTransferBundle\Traits\DatabaseConnectionTrait;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

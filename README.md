@@ -8,7 +8,7 @@ This is a bundle to provide easy transfer of server data (database + files) to t
 ### 1. Composer
 Install the dependency via composer.
 ```
-composer require acrnogor/data-transfer-bundle
+composer require primedigital/data-transfer-bundle
 ```
 
 ### 2. Configuration
@@ -22,7 +22,7 @@ into your config.yml
 ### 3. Register Bundle
 Add the bundle in app/AppKernel.php
 ```
-$bundles[] = new Acrnogor\DataTransferBundle\DataTransferBundle();
+$bundles[] = new Prime\DataTransferBundle\DataTransferBundle();
 ```
 
 ### 4. Configuration
