@@ -24,7 +24,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2",
+        "php": ">=7.0",
 		"symfony/console": "*",
 		"symfony/process": "*"
     },
@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Prime\\DataTransferBundle": "lib"
+            "Prime\\DataTransferBundle\\": "lib"
         }
     }
 }
