@@ -1,7 +1,7 @@
 <?php
 namespace Prime\DataTransferBundle\Command;
 
-use Acrnogor\DataTransferBundle\Traits\DatabaseConnectionTrait;
+use Prime\DataTransferBundle\Traits\DatabaseConnectionTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

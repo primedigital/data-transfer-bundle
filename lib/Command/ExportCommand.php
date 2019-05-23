@@ -2,7 +2,7 @@
 
 namespace Prime\DataTransferBundle\Command;
 
-use Acrnogor\DataTransferBundle\Traits\DatabaseConnectionTrait;
+use Prime\DataTransferBundle\Traits\DatabaseConnectionTrait;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,7 +38,7 @@ class ExportCommand extends ContainerAwareCommand
         $dbParams = $this->getDatabaseParameter();
 
         // Prepare command line parameters
-        $parameters = Array();
+        $parameters = [];
         $parameters[] = escapeshellarg($dbParams['dbName']);
         $parameters[] = sprintf('--user=%s', escapeshellarg($dbParams['dbUser']));
         $parameters[] = sprintf('--password=%s', escapeshellarg($dbParams['dbPass']));

@@ -32,7 +32,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      *
      * @var array
      */
-    protected $errors = Array();
+    protected $errors = [];
 
     /**
      * Save the output as class attribute to do some funny output stuff
@@ -102,7 +102,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         foreach ($this->errors as $err) {
             $this->output->writeln(sprintf('<error>%s</error>', $err));
         }
-        $this->errors = Array();
+        $this->errors = [];
     }
 
     /**
