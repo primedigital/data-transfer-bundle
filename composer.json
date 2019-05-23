@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Prime\\DataTransferBundle": "lib",
+            "Prime\\DataTransferBundle": "lib"
         }
     }
 }
