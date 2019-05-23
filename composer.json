@@ -29,11 +29,17 @@
 		"symfony/process": "*"
     },
     "require-dev": {
-        "symfony/console": "*"
+        "symfony/console": "*",
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
             "Prime\\DataTransferBundle\\": "lib"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Prime\\DataTransferBundle\\Tests\\": "tests"
         }
     }
 }
