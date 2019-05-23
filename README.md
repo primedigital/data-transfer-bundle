@@ -1,52 +1,19 @@
 data-transfer-bundle
 ====================
 
-This is a bundle to provide easy transfer of server data (database + files) to the client. It can be used in plain symfony projects or for ezpublish >= 5.x
+[![Downloads](https://img.shields.io/packagist/dt/primedigital/data-transfer-bundle.svg?style=flat-square)](https://packagist.org/packages/primedigital/data-transfer-bundle/stats)
+[![Latest stable](https://img.shields.io/packagist/v/primedigital/data-transfer-bundle.svg?style=flat-square)](https://packagist.org/packages/primedigital/data-transfer-bundle)
+[![License](https://img.shields.io/packagist/l/primedigital/data-transfer-bundle.svg?style=flat-square)](LICENSE)
 
-## INSTALLATION ##
+This is a bundle to provide easy transfer of server data (database + files) to the client. It can be used in plain symfony projects or for ezpublish >= 5.x.
 
-### 1. Composer
-Install the dependency via composer.
-```
-composer require primedigital/data-transfer-bundle
-```
+License, docs and installation instructions
+-------------------------------------
 
-### 2. Configuration
-Import configuration into main config (app/config/config.yml). Add the following line
-```
-imports:
-    - {resource: @DataTransferBundle/Resources/config/parameters.yml}
-```
-into your config.yml
+[License](LICENSE)
 
-### 3. Register Bundle
-Add the bundle in app/AppKernel.php
-```
-$bundles[] = new Prime\DataTransferBundle\DataTransferBundle();
-```
+[Installation instructions](doc/INSTALL.md)
 
-### 4. Configuration
-* Adapt configuration (parameters.yml + parameters.yml.dist) to your project's needs (Server, Path, siteaccess, ...)
-* make sure you or your docker-container have properly setup ssh key and that is on 'authorized_keys' on the server
+[Documentation](doc/DOC.md)
 
-## Configuration ##
-
-See Resources/config/parameters.yml for details
-
-## Usage ##
-
-To transfer database+files from the remote server to your develop environment simply call.
-```
-php app/console data-transfer:fetch
-```
-
-NOTE: The bundle must be already deployed on the remote side in order to work.
-
-To limit the transfer to database or files only, use
-```
-php app/console data-transfer:fetch --db-only
-```
-or 
-```
-php app/console data-transfer:fetch --files-only
-```
+[Changelog](doc/CHANGELOG.md)
